@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reconciliation Report</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Reconciliation Report</h1>
+
+    {% if missing_in_target %}
+    <h2>Records present in source but missing in target:</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Unique Identifier</th>
+                <!-- Add more columns as needed -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in missing_in_target %}
+            <tr>
+                <td>{{ record.unique_identifier }}</td>
+                <!-- Add more columns as needed -->
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+    {% if missing_in_source %}
+    <h2>Records present in target but missing in source:</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Unique Identifier</th>
+                <!-- Add more columns as needed -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in missing_in_source %}
+            <tr>
+                <td>{{ record.unique_identifier }}</td>
+                <!-- Add more columns as needed -->
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+    {% if discrepancies %}
+    <h2>Records with field discrepancies:</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Unique Identifier</th>
+                <th>Field</th>
+                <th>Source Value</th>
+                <th>Target Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in discrepancies %}
+            <tr>
+                <td>{{ record.identifier }}</td>
+                <td>{{ record.field }}</td>
+                <td>{{ record.source_value }}</td>
+                <td>{{ record.target_value }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+</body>
+</html>
