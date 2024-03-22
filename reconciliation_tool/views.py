@@ -4,6 +4,8 @@ from django.http import HttpResponseBadRequest
 from .forms import CSVUploadForm
 from .models import CSVRecord
 
+from django.http import HttpResponseBadRequest
+
 def parse_csv(file):
     try:
         data = []
@@ -11,8 +13,10 @@ def parse_csv(file):
         for row in reader:
             data.append(row)
         return data
-    except (UnicodeDecodeError, csv.Error) as e:
+    except UnicodeDecodeError as e:
         raise HttpResponseBadRequest("Error parsing CSV file: {}".format(str(e)))
+    except csv.Error as e:
+        raise HttpResponseBadRequest("CSV parsing error: {}".format(str(e)))
     
 def reconcile_records(source_data, target_data):
     # Convert data to dictionaries with unique identifiers as keys
@@ -45,8 +49,8 @@ def home(request):
         form = CSVUploadForm(request.POST, request.FILES)
         if form.is_valid():
             try:
-                source_data = parse_file(request.FILES['source_file'])
-                target_data = parse_file(request.FILES['target_file'])
+                source_data = parse_csv(request.FILES['source_file'])
+                target_data = parse_csv(request.FILES['target_file'])
                 # Generate and return reconciliation report
                 missing_in_target, missing_in_source, discrepancies = reconcile_records(source_data, target_data)
                 return render(request, 'report.html', {
@@ -54,8 +58,8 @@ def home(request):
                     'missing_in_source': missing_in_source,
                     'discrepancies': discrepancies
                 })
-            except HttpResponseBadRequest as e:
-                form.add_error(None, str(e))  # Add error to form
+            except Exception as e:
+                return HttpResponseBadRequest(str(e))  # Return a generic error response
     else:
         form = CSVUploadForm()
     return render(request, 'home.html', {'form': form})

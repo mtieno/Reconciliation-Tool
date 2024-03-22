@@ -16,7 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from reconciliation_tool.views import home  # Import your view function
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', home, name='home'),  # Map the root URL to the home view
 ]
