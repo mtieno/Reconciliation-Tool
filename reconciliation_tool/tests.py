@@ -43,7 +43,7 @@ class CSVProcessingTests(TestCase):
         ]
         self.assertEqual(parsed_target_data, expected_target_data)
 
-    def test_reconciliation(self):
+    """def test_reconciliation(self):
         # Test case for data reconciliation
         source_data = [
             {'ID': '001', 'Name': 'John Doe', 'Date': '2023-01-01', 'Amount': '100.00'},
@@ -60,3 +60,23 @@ class CSVProcessingTests(TestCase):
         self.assertEqual(missing_in_target, [{'ID': '003', 'Name': 'Robert Brown', 'Date': '2023-01-03', 'Amount': '300.75'}])
         self.assertEqual(missing_in_source, [])
         self.assertEqual(discrepancies, [])
+        """
+    #testing for reconcilliation with fuzzy logic
+    def test_reconciliation(self):
+        # Test case for data reconciliation with fuzzy matching
+        source_data = [
+            {'ID': '001', 'Name': 'John Doe', 'Date': '2023-01-01', 'Amount': '100.00'},
+            {'ID': '002', 'Name': 'Jane Smith', 'Date': '2023-01-02', 'Amount': '200.50'},
+            {'ID': '003', 'Name': 'Robert Brown', 'Date': '2023-01-03', 'Amount': '300.75'}
+        ]
+        target_data = [
+            {'ID': '001', 'Name': 'John Doe', 'Date': '2023-01-01', 'Amount': '100.00'},
+            {'ID': '002', 'Name': 'Jane Smith', 'Date': '2023-01-04', 'Amount': '200.50'},
+            {'ID': '004', 'Name': 'Emily White', 'Date': '2023-01-05', 'Amount': '400.90'}
+        ]
+        missing_in_target, missing_in_source, discrepancies = reconcile_records(source_data, target_data)
+        # Asserting the results of reconciliation with fuzzy matching
+        self.assertEqual(missing_in_target, [{'ID': '003', 'Name': 'Robert Brown', 'Date': '2023-01-03', 'Amount': '300.75'}])
+        self.assertEqual(missing_in_source, [])
+        # Asserting that discrepancies list is not empty
+        self.assertNotEqual(discrepancies, [])
